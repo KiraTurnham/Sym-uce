@@ -111,6 +111,8 @@ sbatch --output="${SYMBIO_BASE_DIR}/slurm_logs/%x_%A_%a.out" \
 
 The explicit log paths also work if `SYMBIO_BASE_DIR` is customized; SLURM
 does not expand values sourced from `config.sh` inside `#SBATCH` directives.
+Submit the job while your current directory is the repository root so the
+script can source `scripts/config.sh` through SLURM's `SLURM_SUBMIT_DIR`.
 
 ## Outputs and interpretation
 

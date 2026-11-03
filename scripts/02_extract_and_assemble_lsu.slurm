@@ -10,7 +10,12 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="${SLURM_SUBMIT_DIR:-$(pwd)}/scripts"
+if [[ ! -r "${SCRIPT_DIR}/config.sh" ]]; then
+  echo "ERROR: Cannot find ${SCRIPT_DIR}/config.sh." >&2
+  echo "Submit this job from the repository root or set --chdir to it." >&2
+  exit 1
+fi
 source "${SCRIPT_DIR}/config.sh"
 
 if [[ ! "${SLURM_ARRAY_TASK_ID:-}" =~ ^[1-9][0-9]*$ ]]; then
