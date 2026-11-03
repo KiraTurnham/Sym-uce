@@ -51,8 +51,8 @@ echo "Starting LSU read extraction for ${SAMPLE}"
 echo "Node: $(hostname)"
 echo "Date: $(date)"
 
-R1="${FASTP_DIR}/${SAMPLE}_clean_R1.fastq.gz"
-R2="${FASTP_DIR}/${SAMPLE}_clean_R2.fastq.gz"
+R1="${FASTP_DIR}/${SAMPLE}${FASTQ_R1_SUFFIX}"
+R2="${FASTP_DIR}/${SAMPLE}${FASTQ_R2_SUFFIX}"
 if [[ ! -s "${R1}" || ! -s "${R2}" ]]; then
   echo "ERROR: Input FASTQ is missing or empty for ${SAMPLE}:" >&2
   echo "  R1: ${R1}" >&2

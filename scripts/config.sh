@@ -2,6 +2,8 @@
 
 export BASE_SCRATCH="${SYMBIO_BASE_DIR:-/scratch/${USER:-$(id -un)}/symbiodiniaceae_mining}"
 export FASTP_DIR="${FASTP_INPUT_DIR:-/scratch/${USER:-$(id -un)}/phyluce_project/workflow_fast_megahit/fastp_trimmed}"
+export FASTQ_R1_SUFFIX="${FASTQ_R1_SUFFIX:-_R1_trimmed.fastq.gz}"
+export FASTQ_R2_SUFFIX="${FASTQ_R2_SUFFIX:-_R2_trimmed.fastq.gz}"
 
 export REF_DIR="${BASE_SCRATCH}/ref"
 export REF_FASTA="${REF_DIR}/symbiodiniaceae_lsu.fasta"

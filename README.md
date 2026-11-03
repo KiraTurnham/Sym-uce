@@ -55,8 +55,10 @@ species identity. Provenance and limitations are documented in
 [`references/README.md`](references/README.md) and
 [`references/lsu_reference_sources.tsv`](references/lsu_reference_sources.tsv).
 
-If needed, set `FASTP_INPUT_DIR` to the directory containing the existing
-`*_clean_R1.fastq.gz` and `*_clean_R2.fastq.gz` files. Defaults are documented
+Set `FASTP_INPUT_DIR` to the existing `fastp_trimmed` directory. This workflow
+expects paired files named `<sample>_R1_trimmed.fastq.gz` and
+`<sample>_R2_trimmed.fastq.gz`, such as
+`ESA_OCC_007_26_S11_L004_R1_trimmed.fastq.gz`. These suffixes are configured
 in [`scripts/config.sh`](scripts/config.sh).
 
 Build the Bowtie2 index on Sedna:
@@ -72,8 +74,8 @@ one-sample-per-line manifest:
 
 ```bash
 export FASTP_INPUT_DIR="/scratch/${USER}/phyluce_project/workflow_fast_megahit/fastp_trimmed"
-find "${FASTP_INPUT_DIR}" -maxdepth 1 -type f -name '*_clean_R1.fastq.gz' \
-  -printf '%f\n' | sed 's/_clean_R1\.fastq\.gz$//' \
+find "${FASTP_INPUT_DIR}" -maxdepth 1 -type f -name '*_R1_trimmed.fastq.gz' \
+  -printf '%f\n' | sed 's/_R1_trimmed\.fastq\.gz$//' \
   > "${SYMBIO_BASE_DIR}/sample_manifests/sample_list.txt"
 
 cat "${SYMBIO_BASE_DIR}/sample_manifests/sample_list.txt"
@@ -83,8 +85,8 @@ Check that every listed sample has both mates before submission:
 
 ```bash
 while IFS= read -r sample; do
-  test -s "${FASTP_INPUT_DIR}/${sample}_clean_R1.fastq.gz" &&
-    test -s "${FASTP_INPUT_DIR}/${sample}_clean_R2.fastq.gz" ||
+  test -s "${FASTP_INPUT_DIR}/${sample}_R1_trimmed.fastq.gz" &&
+    test -s "${FASTP_INPUT_DIR}/${sample}_R2_trimmed.fastq.gz" ||
     { echo "Missing FASTQ mate for ${sample}" >&2; exit 1; }
 done < "${SYMBIO_BASE_DIR}/sample_manifests/sample_list.txt"
 ```
