@@ -40,7 +40,7 @@ module purge
 module load aligners/bowtie2/2.5.0
 module load bio/samtools/1.19
 
-mamba activate base
+mamba activate "${MEGAHIT_ENV}"
 
 SAMPLE="$(sed -n "${SLURM_ARRAY_TASK_ID}p" "${MANIFEST}")"
 if [[ -z "${SAMPLE}" ]]; then

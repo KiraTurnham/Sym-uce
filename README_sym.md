@@ -19,16 +19,21 @@ results. The current pipeline does not run BLAST.
 - SLURM and Environment Modules
 - `aligners/bowtie2/2.5.0`
 - `bio/samtools/1.19`
-- Mamba/Conda `base` environment with MEGAHIT
+- Mamba/Conda environment containing MEGAHIT (default: `mg-assembly`)
 - Bash, `gzip`, and standard GNU utilities
 
 Confirm MEGAHIT is available before submitting jobs:
 
 ```bash
+export MEGAHIT_ENV="${MEGAHIT_ENV:-mg-assembly}"
 eval "$(mamba shell hook --shell bash)"
-mamba activate base
+mamba activate "${MEGAHIT_ENV}"
 megahit --version
 ```
+
+The worker uses the same `MEGAHIT_ENV` setting from `scripts/config.sh`.
+Override it before submitting if MEGAHIT is installed in a differently named
+environment.
 
 ## Setup
 
@@ -45,6 +50,34 @@ mkdir -p "${SYMBIO_BASE_DIR}"/{ref,sample_manifests,mapped_bam,assemblies,slurm_
 cp references/symbiodiniaceae_lsu.fasta \
   "${SYMBIO_BASE_DIR}/ref/symbiodiniaceae_lsu.fasta"
 ```
+
+The expected Sedna layout is:
+
+```text
+/scratch/kturnham/
+├── Sym-uce/                                      # cloned repository; run scripts here
+│   ├── README_sym.md
+│   ├── references/
+│   └── scripts/
+├── symbiodiniaceae_mining/                       # SYMBIO_BASE_DIR: indexes, manifests, results
+│   ├── ref/
+│   │   ├── symbiodiniaceae_lsu.fasta
+│   │   └── sym_lsu_bt2.*                         # Bowtie2 index files
+│   ├── sample_manifests/
+│   ├── mapped_bam/
+│   ├── assemblies/
+│   └── slurm_logs/
+└── phyluce_project/
+    └── workflow_fast_megahit/
+        └── fastp_trimmed/                        # FASTP_INPUT_DIR
+            ├── <sample>_R1_trimmed.fastq.gz
+            └── <sample>_R2_trimmed.fastq.gz
+```
+
+In the shell, `cd /scratch/kturnham/Sym-uce` to run the repository scripts.
+The submit jobs read the trimmed FASTQs from `fastp_trimmed` and write indexes,
+manifests, alignments, assemblies, and logs under
+`/scratch/kturnham/symbiodiniaceae_mining`.
 
 The reference contains 75 LSU sequences from the Symbiodiniaceae family in
 the LaJeunesse et al. systematic revision alignment, plus two 28S records for
