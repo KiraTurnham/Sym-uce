@@ -9,7 +9,7 @@ export REF_DIR="${BASE_SCRATCH}/ref"
 export REF_FASTA="${REF_DIR}/symbiodiniaceae_lsu.fasta"
 export REF_INDEX_PREFIX="${REF_DIR}/sym_lsu_bt2"
 
-export MANIFEST="${BASE_SCRATCH}/sample_manifests/sample_list.txt"
+export MANIFEST="${SAMPLE_MANIFEST:-${BASE_SCRATCH}/sample_manifests/sample_list.txt}"
 export BAM_DIR="${BASE_SCRATCH}/mapped_bam"
 export ASSEMBLY_DIR="${BASE_SCRATCH}/assemblies"
 export LOG_DIR="${BASE_SCRATCH}/slurm_logs"

@@ -75,7 +75,15 @@ EXTRACTED_R1="${SAMPLE_BAM}/${SAMPLE}_lsu_R1.fastq.gz"
 EXTRACTED_R2="${SAMPLE_BAM}/${SAMPLE}_lsu_R2.fastq.gz"
 CONTIGS="${SAMPLE_ASSEMBLY}/final.contigs.fa"
 
-rm -rf -- "${SAMPLE_ASSEMBLY}"
+for OUTPUT in \
+  "${RAW_BAM}" "${NAMESORT_BAM}" "${EXTRACTED_R1}" "${EXTRACTED_R2}" \
+  "${SAMPLE_ASSEMBLY}"; do
+  if [[ -e "${OUTPUT}" ]]; then
+    echo "ERROR: Output already exists for ${SAMPLE}: ${OUTPUT}" >&2
+    echo "Move or remove the existing output before rerunning this sample." >&2
+    exit 1
+  fi
+done
 
 echo "[$(date)] Aligning ${SAMPLE} reads to LSU references..."
 bowtie2 --very-sensitive-local -p "${THREADS}" \

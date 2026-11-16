@@ -67,8 +67,10 @@ Build the Bowtie2 index on Sedna:
 bash scripts/01_build_lsu_reference_index.sh
 ```
 
-## Sample manifest
+## Generic sample manifest
 
+This manual option includes every matching sample in the directory. Do not use
+it for a new-samples-only run if the directory also contains older samples.
 Set `FASTP_INPUT_DIR` if it differs from the default, then produce a
 one-sample-per-line manifest:
 
@@ -113,6 +115,48 @@ The explicit log paths also work if `SYMBIO_BASE_DIR` is customized; SLURM
 does not expand values sourced from `config.sh` inside `#SBATCH` directives.
 Submit the job while your current directory is the repository root so the
 script can source `scripts/config.sh` through SLURM's `SLURM_SUBMIT_DIR`.
+
+## Pilot, then the remaining new samples
+
+Make a manifest containing only the newly fastp-processed sample names,
+without read suffixes:
+
+```bash
+cat > "${SYMBIO_BASE_DIR}/sample_manifests/new_samples.txt" <<'EOF'
+NEW_SAMPLE_1
+NEW_SAMPLE_2
+EOF
+```
+
+Replace the example IDs with the actual sample names. Run one of them as a
+pilot:
+
+```bash
+bash scripts/03_submit_lsu_one.sh NEW_SAMPLE_1
+```
+
+Review the pilot's log, recovered-read count, and assembly output before
+submitting the rest. The all-samples submitter validates every sample name and
+both non-empty FASTQ mates, snapshots the manifest under
+`sample_manifests/`, and submits a SLURM array throttled to six concurrent
+tasks. Its manifest must contain only samples that still need processing; if
+the pilot succeeded, omit it from the batch list to avoid processing its
+outputs again. The worker refuses to overwrite output files from any earlier
+run.
+
+```bash
+grep -vx 'NEW_SAMPLE_1' \
+  "${SYMBIO_BASE_DIR}/sample_manifests/new_samples.txt" \
+  > "${SYMBIO_BASE_DIR}/sample_manifests/remaining_samples.txt"
+bash scripts/04_submit_lsu_new_samples.sh \
+  "${SYMBIO_BASE_DIR}/sample_manifests/remaining_samples.txt"
+```
+
+The submitter checks for the reference and a complete Bowtie2 index, creates
+the log directory, and passes explicit log paths so customized scratch paths
+work. The job requests 8 CPUs, 16 GB RAM, and 3 hours per sample. Set
+`FASTP_INPUT_DIR` before running the submit helpers if it differs from the
+default in `scripts/config.sh`.
 
 ## Outputs and interpretation
 
